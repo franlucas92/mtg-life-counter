@@ -222,6 +222,6 @@ app.prepare().then(() =>
 // Función para generar un color aleatorio
 function getRandomColor()
 {
-	const colors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#ffff4d', '#ff4dff', '#4dffff'];
+	const colors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#F7B44F', '#ff4dff', '#4dffff'];
 	return colors[Math.floor(Math.random() * colors.length)];
 }
