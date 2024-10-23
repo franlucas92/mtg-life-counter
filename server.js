@@ -8,7 +8,44 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 let gameState = null; // Estado de la partida
-const availableColors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#F7B44F', '#ff4dff', '#4dffff'];
+const availableColors2 = [
+	'#ff4d4d', // Rojo
+	'#A3D9A5', // Verde suave
+	'#A5B8D9', // Azul suave
+	'#F0C78A', // Amarillo suave
+	'#D3A5D9', // Morado suave
+	'#A5D9D9', // Cian suave
+	'#E9B8B8', // Rosa suave
+	'#B8E9E1', // Aguamarina suave
+	'#E9D7B8', // Arena suave
+	'#C1D9E9', // Azul cielo suave
+	'#D1E9B8', // Lima suave
+	'#E9C1B8', // Coral suave
+	'#D9A5A5', // Salmón suave
+	'#B8E9C1', // Verde menta suave
+	'#B8D1E9', // Azul hielo suave
+	'#E9B8D7', // Rosa claro suave
+	'#B8C1E9', // Lavanda suave
+	'#D9C1E9', // Lila suave
+	'#A5D3D9', // Azul grisáceo suave
+	'#D9B8A5', // Naranja pálido suave
+  ];
+
+  const availableColors = [
+	'#FF6666', // Rojo satinado
+	'#66FFB3', // Verde satinado
+	'#66B3FF', // Azul satinado
+	'#FFD966', // Amarillo satinado
+	'#FF66FF', // Magenta satinado
+	'#66FFFF', // Cian satinado
+	'#FFA366', // Naranja satinado
+	'#C266FF', // Púrpura satinado
+	'#FF668C', // Rosa satinado
+	'#66FFCC', // Verde menta satinado
+  ];
+  
+  
+
 
 app.prepare().then(() =>
 {
@@ -60,7 +97,7 @@ app.prepare().then(() =>
 					};
 					gameState.players.push(player);
 					socket.emit('playerData', player);
-					availableColors.splice(0, availableColors.length, ...['#ff4d4d', '#4dff4d', '#4d4dff', '#ffff4d', '#ff4dff', '#4dffff']);
+					availableColors.splice(0, availableColors.length, ...availableColors);
 					io.emit('gameState', gameState);
 
 					// Dentro del evento 'joinGame'
@@ -94,32 +131,29 @@ app.prepare().then(() =>
 		});
 
 		// Actualizar la vida del jugador
-		socket.on('updateLife', (life) =>
+		socket.on('updateLife', ({ playerId, delta }) =>
 		{
 			if(gameState)
 			{
-				const player = gameState.players.find((p) => p.id === socket.id);
+				const player = gameState.players.find((p) => p.id === playerId);
 				if(player)
 				{
-					player.life = life;
+					player.life += delta;
 
-					// Comprobar si el jugador ha muerto
+					// Comprobar si el jugador ha muerto o revivido
 					if(player.life <= 0)
 					{
 						player.isDead = true;
-						socket.emit('errorMessage', 'Has muerto.');
-					} else if(player.isDead)
+					} else
 					{
-						// Revivir al jugador si estaba muerto y ahora tiene vida positiva
 						player.isDead = false;
-						socket.emit('errorMessage', 'Has revivido.');
 					}
-
 
 					io.emit('gameState', gameState);
 				}
 			}
 		});
+
 
 		// Dentro del evento 'updateCommanderDamage'
 		socket.on('updateCommanderDamage', ({ fromPlayerId, toPlayerId, damage }) =>
@@ -222,6 +256,6 @@ app.prepare().then(() =>
 // Función para generar un color aleatorio
 function getRandomColor()
 {
-	const colors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#F7B44F', '#ff4dff', '#4dffff'];
+	const colors = availableColors;
 	return colors[Math.floor(Math.random() * colors.length)];
 }

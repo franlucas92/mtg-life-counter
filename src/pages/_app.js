@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import styles from './styles.css';
+import useWakeLock from '../useWakeLock'; 
 
 let socket;
 
@@ -17,6 +18,7 @@ export default function Home()
     const [life, setLife] = useState(40);
     const [errorMessage, setErrorMessage] = useState('');
 
+    useWakeLock();
     useEffect(() =>
     {
         socketInitializer();
@@ -71,29 +73,30 @@ export default function Home()
         }
     };
 
-    const handleLifeChange = (delta) =>
+    const handleLifeChange = (playerId, delta) =>
     {
-        const newLife = life + delta;
-        setLife(newLife);
-        socket.emit('updateLife', newLife);
+        socket.emit('updateLife', { playerId, delta });
     };
 
-    const handleCommanderDamageChange = (fromPlayerId, delta) =>
+
+    const handleCommanderDamageChange = (fromPlayerId, toPlayerId, delta) =>
     {
-        /*if(!playerData.isDead)
-        {*/
-            const currentDamage = playerData.commanderDamage[fromPlayerId] || 0;
+        const player = gameState.players.find((p) => p.id === toPlayerId);
+        if(player)
+        {
+            const currentDamage = player.commanderDamage[fromPlayerId] || 0;
             const newDamage = currentDamage + delta;
             if(newDamage >= 0)
             {
                 socket.emit('updateCommanderDamage', {
                     fromPlayerId: fromPlayerId,
-                    toPlayerId: playerData.id,
+                    toPlayerId: toPlayerId,
                     damage: newDamage,
                 });
             }
-       // }
+        }
     };
+
 
 
     const handleResetGame = () =>
@@ -162,33 +165,39 @@ export default function Home()
                         <h2>{player.name || 'Esperando...'}</h2>
                         {player.isDead && <p>Muerto</p>}
                         <h1>{player.life}</h1>
-                        {player.id === playerData.id  && (
-                            <div>
-                                <button onClick={() => handleLifeChange(1)}>+1</button>
-                                <button onClick={() => handleLifeChange(-1)}>-1</button>
-                            </div>
-                        )}
-                        {/* Mostrar daño de comandante recibido de otros jugadores */}
-                        {player.id === playerData.id  && (
-                            <div className={styles.commanderDamageSection}>
-                                <h3>Daño de comandante recibido:</h3>
-                                {gameState.players
-                                    .filter((p) => p.id !== player.id)
-                                    .map((opponent) =>
-                                    {
-                                        const damage = player.commanderDamage[opponent.id] || 0;
-                                        return (
-                                            <div key={opponent.id} className={styles.commanderDamageRow}>
-                                                <span>{opponent.name}: {damage}</span>
-                                                <button onClick={() => handleCommanderDamageChange(opponent.id, 1)}>+1</button>
-                                                <button onClick={() => handleCommanderDamageChange(opponent.id, -1)}>-1</button>
-                                            </div>
-                                        );
-                                    })}
-                            </div>
-                        )}
+
+                        {/* Controles para ajustar la vida de este jugador */}
+                        <div>
+                            <button onClick={() => handleLifeChange(player.id, 1)}>+1</button>
+                            <button onClick={() => handleLifeChange(player.id, -1)}>-1</button>
+                        </div>
+
+                        {/* Mostrar daño de comandante recibido por este jugador */}
+                        <div className={styles.commanderDamageSection}>
+                            <h3>Daño de comandante recibido:</h3>
+                            {gameState.players
+                                .filter((p) => p.id !== player.id)
+                                .map((opponent) =>
+                                {
+                                    const damage = player.commanderDamage[opponent.id] || 0;
+                                    return (
+                                        <div key={opponent.id} className={styles.commanderDamageRow}>
+                                            <span>
+                                                {opponent.name}: {damage}
+                                            </span>
+                                            <button onClick={() => handleCommanderDamageChange(opponent.id, player.id, 1)}>
+                                                +1
+                                            </button>
+                                            <button onClick={() => handleCommanderDamageChange(opponent.id, player.id, -1)}>
+                                                -1
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                        </div>
                     </div>
                 ))}
+
             </div>
             <button className={styles.resetButton} onClick={handleResetGame}>
                 Reiniciar Partida

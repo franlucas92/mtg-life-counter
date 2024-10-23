@@ -6,7 +6,13 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: #1e1e1e;
-	color: #ffffff;
+	color: #f2f1f1;
+	text-shadow: 
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+	
   }
   
   /* Contenedor principal */
