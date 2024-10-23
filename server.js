@@ -8,7 +8,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 let gameState = null; // Estado de la partida
-const availableColors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#ffff4d', '#ff4dff', '#4dffff'];
+const availableColors = ['#ff4d4d', '#4dff4d', '#4d4dff', '#F7B44F', '#ff4dff', '#4dffff'];
 
 app.prepare().then(() =>
 {
