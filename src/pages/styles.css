@@ -1,18 +1,14 @@
 /* styles/Home.module.css */
 
-/* Aplicar una fuente moderna */
-body {
-	font-family: 'Roboto', sans-serif;
+/* Asegurar que html y body ocupen el 100% de la altura y eliminar márgenes */
+html, body {
+	height: 100%;
 	margin: 0;
 	padding: 0;
+	overflow: hidden;
+	font-family: 'Roboto', sans-serif;
 	background-color: #1e1e1e;
-	color: #f2f1f1;
-	text-shadow: 
-    -1px -1px 0 #000,  
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
-	
+	color: #ffffff;
   }
   
   /* Contenedor principal */
@@ -20,8 +16,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 2rem 1rem;
-	min-height: 100vh;
+	height: 100%;
 	box-sizing: border-box;
   }
   
@@ -30,54 +25,115 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	flex-grow: 1;    
 	width: 100%;
+    height: 100%;
+    position: absolute;
   }
   
-  /* Grid adaptable para los contadores de jugadores */
-  .gridContainer {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-	gap: 1rem;
+ /* Contenedor de las tarjetas de jugador */
+.playerCardsContainer {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: stretch;
+	flex-grow: 1;
 	width: 100%;
-	max-width: 1200px;
-	margin-top: 1rem;
+	padding: 10px;
+	box-sizing: border-box;
+	overflow: auto;
+    height: 100%;
+    position: relative;
   }
   
-  /* Tarjeta de cada jugador */
+  /* Tarjeta de jugador */
   .playerCard {
 	background-color: #2e2e2e;
-	padding: 1.5rem;
-	text-align: center;
-	border-radius: 0.5rem;
-	position: relative;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-	transition: transform 0.2s;
+	margin: 5px;
+	flex: 1 1 calc(50% - 10px); /* Dos columnas */
+	max-width: calc(50% - 10px);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border-radius: 10px;
+	box-sizing: border-box;
+	min-height: 150px;
+  }
+  /* Estilos para los resultados de búsqueda */
+.searchResults {
+	max-height: 300px;
+	overflow-y: auto;
+	background-color: #2e2e2e;
+	border: 1px solid #444;
+	border-radius: 5px;
+	margin-top: 5px;
   }
   
-  .playerCard:hover {
-	transform: translateY(-5px);
+  .searchResultItem {
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	cursor: pointer;
+  }
+  
+  .searchResultItem:hover {
+	background-color: #3d3d3d;
+  }
+  
+  .cardThumbnail {
+	width: 40px;
+	height: 56px;
+	object-fit: cover;
+	margin-right: 10px;
+  }
+
+  .selectedCommander {
+	margin-top: 10px;
+	text-align: center;
+  }
+  
+  .selectedCommander img {
+	width: 200px;
+	border-radius: 5px;
+  }
+  
+  
+  /* Ajustes para diferentes cantidades de jugadores y tamaños de pantalla */
+  @media (max-width: 800px) {
+	.playerCard {
+	  flex: 1 1 calc(100% - 10px); /* Una columna en pantallas pequeñas */
+	  max-width: calc(100% - 10px);
+	}
   }
   
   /* Nombre del jugador */
   .playerCard h2 {
 	margin: 0;
 	font-size: 1.5rem;
-	color: #ffcc00;
+	color: white;
+  }
+  
+  /* Indicador de muerte */
+  .playerCard p {
+	margin: 0.5rem 0;
+	font-size: 1rem;
+	color: white;
   }
   
   /* Vida del jugador */
   .playerCard h1 {
 	font-size: 3rem;
-	margin: 1rem 0;
+	margin: 0.5rem 0;
   }
   
   /* Botones dentro de la tarjeta del jugador */
   .playerCard button {
-	margin: 0.5rem;
-	padding: 0.75rem 1.5rem;
+	margin: 0.25rem;
+	padding: 0.5rem 1rem;
 	font-size: 1rem;
-	background-color: #ffcc00;
-	color: #1e1e1e;
+	background-color: #1e1e1e;
+	color: white;
 	border: none;
 	border-radius: 0.25rem;
 	cursor: pointer;
@@ -85,46 +141,108 @@ body {
   }
   
   .playerCard button:hover {
+	background-color: #565656;
+  }
+  
+  /* Botón para mostrar/ocultar daño de comandante */
+.showCommanderDamageButton {
+	margin-top: 0.5rem;
+	padding: 0.4rem 0.8rem;
+	font-size: 0.9rem;
+	background-color: #ffcc00;
+	color: #1e1e1e;
+	border: none;
+	border-radius: 0.25rem;
+	cursor: pointer;
+  }
+  
+  .showCommanderDamageButton:hover {
 	background-color: #e6b800;
   }
   
-  /* Sección de daño de comandante */
-  .commanderDamageSection {
-	margin-top: 1.5rem;
-	text-align: left;
+/* Sección de daño de comandante */
+.commanderDamageSection {
+	background-color: #2e2e2e;
+	padding: 1rem;
+	border-radius: 10px;
+	max-width: 90%;
+	max-height: 90%;
+	overflow-y: auto;
+  }
+  /* Overlay para la sección de daño de comandante */
+.commanderDamageOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
   }
   
   /* Fila de daño de comandante */
   .commanderDamageRow {
 	display: flex;
 	align-items: center;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.25rem;
   }
   
   .commanderDamageRow span {
 	flex: 1;
-	font-size: 1rem;
+	font-size: 0.9rem;
+	font-weight: bold;
   }
   
   .commanderDamageRow button {
-	margin-left: 0.5rem;
-	padding: 0.5rem 1rem;
-	font-size: 0.875rem;
-	background-color: #ff6666;
+	margin-left: 0.25rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.8rem;
+	background-color: #3399ff;
 	color: #fff;
 	border: none;
 	border-radius: 0.25rem;
   }
   
   .commanderDamageRow button:hover {
-	background-color: #e65c5c;
+	background-color: #2b82d9;
+  }
+  /* Contador temporal de vida modificada */
+.temporaryLifeChange {
+	position: absolute;
+	top: 10px; /* Ajusta según sea necesario */
+	right: 10px; /* Ajusta según sea necesario */
+	background-color: rgba(0, 0, 0, 0.7);
+	color: #fff;
+	padding: 5px 10px;
+	border-radius: 5px;
+	font-size: 1.2rem;
+	z-index: 1000;
+  }
+  /* Contador temporal de daño de comandante */
+.temporaryCommanderDamageChange {
+	margin-left: 5px;
+	color: #ffcc00;
+	font-weight: bold;
+  }
+  
+  /* Animación para el contador temporal */
+  @keyframes fadeOut {
+	from {
+	  opacity: 1;
+	}
+	to {
+	  opacity: 0;
+	}
   }
   
   /* Botón de reiniciar partida */
   .resetButton {
-	margin-top: 2rem;
-	padding: 1rem 2rem;
-	font-size: 1.125rem;
+	margin-top: 0.5rem;
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
 	background-color: #3399ff;
 	color: #fff;
 	border: none;
@@ -140,11 +258,11 @@ body {
   /* Mensajes de error */
   .error {
 	color: #ff4d4d;
-	margin-top: 1rem;
+	margin-top: 0.5rem;
 	font-size: 1rem;
   }
   
-  /* Estilos para inputs, labels y botones */
+  /* Estilos para inputs, labels y botones en las pantallas de creación y unión */
   input,
   label,
   button {
@@ -155,17 +273,16 @@ body {
   /* Estilos para el input de número de jugadores y nombre */
   input[type="number"],
   input[type="text"] {
-	padding: 0.75rem;
+	padding: 0.5rem;
 	border: none;
 	border-radius: 0.25rem;
-	width: 100%;
-	max-width: 300px;
+	width: 300px;
 	box-sizing: border-box;
   }
   
   /* Estilos para el botón de crear partida y unirse */
   button {
-	padding: 0.75rem 1.5rem;
+	padding: 0.5rem 1rem;
 	font-size: 1rem;
 	background-color: #ffcc00;
 	color: #1e1e1e;
@@ -186,12 +303,57 @@ body {
   
 	.playerCard button {
 	  padding: 0.5rem 1rem;
-	  font-size: 0.875rem;
+	  font-size: 0.9rem;
 	}
   
 	.resetButton {
-	  padding: 0.75rem 1.5rem;
+	  padding: 0.5rem 1rem;
 	  font-size: 1rem;
 	}
   }
+  
+
+  /* Estilos para los resultados de búsqueda */
+.searchResults {
+	max-height: 300px; /* Establece la altura máxima del contenedor */
+	overflow-y: auto; /* Habilita el scroll vertical */
+	background-color: #2e2e2e;
+	border: 1px solid #444;
+	border-radius: 5px;
+	margin-top: 5px;
+	padding: 5px;
+  }
+  
+  /* Estilos para cada ítem de resultado */
+  .searchResultItem {
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	cursor: pointer;
+  }
+  
+  .searchResultItem:hover {
+	background-color: #3d3d3d;
+  }
+  
+  .cardThumbnail {
+	width: 40px;
+	height: 56px;
+	object-fit: cover;
+	margin-right: 10px;
+	border-radius: 3px;
+  }
+  
+  .selectedCommander {
+	margin-top: 10px;
+	text-align: center;
+  }
+  
+  .selectedCommander img {
+	width: 200px;
+	border-radius: 5px;
+  }
+  
+
+
   
