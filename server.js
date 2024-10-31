@@ -53,6 +53,8 @@ app.prepare().then(() =>
 		{
 			// Puedes agregar lógica aquí si lo deseas
 			console.log(`Ping recibido de ${socket.id}`);
+
+			socket.emit('pong');
 		});
 
 		// Enviar el estado inicial al cliente

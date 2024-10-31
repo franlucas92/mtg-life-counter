@@ -147,6 +147,10 @@ export default function Home()
         });
 
 
+        socket.on('pong', () => {
+            console.log('Pong recibido del servidor');
+        });
+
         socket.on('playerData', (data) =>
         {
             setPlayerData(data);
