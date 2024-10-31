@@ -110,7 +110,12 @@ export default function Home()
 
     const socketInitializer = async () =>
     {
-        socket = io();
+        socket = io({
+            reconnection: true, // Habilitar reconexiones automáticas
+            reconnectionAttempts: Infinity, // Intentar reconectar indefinidamente
+            reconnectionDelay: 1000, // Esperar 1 segundo entre intentos de reconexión
+            reconnectionDelayMax: 5000, // Máximo 5 segundos entre intentos
+        });
 
         socket.on('connect', () =>
         {
@@ -147,7 +152,8 @@ export default function Home()
         });
 
 
-        socket.on('pong', () => {
+        socket.on('pong', () =>
+        {
             console.log('Pong recibido del servidor');
         });
 
@@ -437,8 +443,8 @@ export default function Home()
 
                             {/* Mostrar daño de comandante recibido por este jugador */}
                             {showCommanderDamage && (
-                                <div className="commanderDamageSection" 
-                                ref={commanderDamageRef} >
+                                <div className="commanderDamageSection"
+                                    ref={commanderDamageRef} >
                                     <h3>Daño de comandante recibido:</h3>
                                     {gameState.players
                                         .filter((p) => p.id !== player.id)
